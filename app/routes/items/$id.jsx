@@ -7,7 +7,7 @@ export const loader = async ({ params }) => {
   return res
 }
 
-export default function Post() {
+export default function ItemId() {
   const item = useLoaderData()
 
   return (
