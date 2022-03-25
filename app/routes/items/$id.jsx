@@ -21,7 +21,6 @@ export default function Post() {
             <div>
               <h3 className="text-gray-700">
                 <a href={item.url}>{item.title}</a>
-                <span className="pl-1 text-sm text-gray-400">(jvns.ca)</span>
               </h3>
               <div className="flex space-x-1.5 text-xs text-gray-500">
                 <span>
