@@ -42,7 +42,9 @@ Let’s get started by creating a new Remix project. Open your terminal and run 
 npx create-remix@latest remix-hacker-news
 ```
 
-At the prompt, choose **Just the basics** then **Remix App Server,** and then **JavaScript.** Finally, install the npm dependencies.
+At the prompt, choose **Just the basics** then **Remix App Server,** and then **JavaScript.** 
+
+Finally, install the npm dependencies by selecting `Y` when prompted.
 
 Once that’s done, you can change into the project directory and start the app:
 
