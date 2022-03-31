@@ -494,15 +494,6 @@ Single item and comments
 
 Koyeb is a developer-friendly serverless platform to deploy apps globally. No-ops, servers, or infrastructure management and it has supports for different tech stacks such ass Rust, Golang, Python, PHP, Node.js, Ruby, and Docker.
 
-If you are new to Koyeb platform follow these steps to get your account up and your project up running.
-
-1. Signup for free on [https://www.koyeb.com](https://www.koyeb.com)
-
-- You can sign up with your GitHub Account
-- Or manually signup with your full name, email, and password
-
-![https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931210048_koyep.PNG](https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931210048_koyep.PNG)
-
 2. On your [dashboard](https://app.koyeb.com/) click on the ****CREATE APP**** button to set up a new App.
 
 ![https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931227823_koyep1.PNG](https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931227823_koyep1.PNG)
