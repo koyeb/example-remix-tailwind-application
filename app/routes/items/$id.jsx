@@ -11,40 +11,38 @@ export default function ItemId() {
   const item = useLoaderData()
 
   return (
-    <div className="divide-y">
-      <div className="flex items-center space-x-4 p-4">
-        {item && (
-          <>
-            <div className="text-orange-500 font-medium self-start place-self-start ">
-              {item.score}
-            </div>
-            <div>
-              <h3 className="text-gray-700">
-                <a href={item.url}>{item.title}</a>
-              </h3>
-              <div className="flex space-x-1.5 text-xs text-gray-500">
-                <span>
-                  by{' '}
-                  <Link className="hover:underline" to="/">
-                    {item.by}
-                  </Link>
-                </span>
-                <span>{item.time}</span>
-                <Link
-                  className="hover:underline"
-                  to={{ pathname: '/items', query: { id: item.id } }}
-                >
-                  {item.descendants} comments
+    <div className="flex items-center space-x-4 p-4">
+      {item && (
+        <>
+          <div className="text-orange-500 font-medium self-start place-self-start ">
+            {item.score}
+          </div>
+          <div>
+            <h3 className="text-gray-700">
+              <a href={item.url}>{item.title}</a>
+            </h3>
+            <div className="flex space-x-1.5 text-xs text-gray-500">
+              <span>
+                by{' '}
+                <Link className="hover:underline" to="/">
+                  {item.by}
                 </Link>
-              </div>
-              {item.kids &&
-                item.kids.map((comment) => (
-                  <Comment item={comment} key={comment} />
-                ))}
+              </span>
+              <span>{item.time}</span>
+              <Link
+                className="hover:underline"
+                to={{ pathname: '/items', query: { id: item.id } }}
+              >
+                {item.descendants} comments
+              </Link>
             </div>
-          </>
-        )}
-      </div>
+            {item.kids &&
+              item.kids.map((comment) => (
+                <Comment item={comment} key={comment} />
+              ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }

@@ -42,6 +42,8 @@ Let’s get started by creating a new Remix project. Open your terminal and run 
 npx create-remix@latest remix-hacker-news
 ```
 
+`npx` allows us to execute npm packages binaries (`create-remix` in our case) without having to first install it.
+
 At the prompt, choose **Just the basics** then **Remix App Server,** and then **JavaScript.** 
 
 Finally, install the npm dependencies by selecting `Y` when prompted.
@@ -53,7 +55,7 @@ cd remix-hacker-news
 npm run dev
 ```
 
-The app should be running on [localhost:3000](http://localhost:3000).
+The app should be running on [localhost:3000](http://localhost:3000). We are going to leave it running as we continue to build the app.
 
 ## Add Tailwind CSS to the App
 
@@ -63,7 +65,9 @@ For styling the app, we’ll be using Tailwind CSS, so let’s install and set i
 npm install -D tailwindcss postcss autoprefixer concurrently
 ```
 
-In addition to Tailwind and its peer dependencies, we are also installing `concurrently` which will be used to run multiple commands concurrently
+* `postcss`: for transforming styles with JS plugins.
+* `autoprefixer`: for automatically applying vendor prefixes to CSS.
+* `concurrently`: for running multiple commands concurrently.
 
 Next, run the `init` command to create `tailwind.config.js`
 
@@ -90,8 +94,8 @@ We need to add a new command to our application to successfully compile the CSS.
 
 "scripts": {
 	"build": "npm run build:css && remix build",
-	"build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",
-	"dev": "concurrently \\"npm run dev:css\\" \\"remix dev\\"",
+	"build:css": "tailwindcss -m -i ./styles/app.css -o app/styles/app.css",	
+  "dev": "concurrently \"npm run dev:css\" \"remix dev\"",
 	"dev:css": "tailwindcss -w -i ./styles/app.css -o app/styles/app.css",
 }
 ```
@@ -180,7 +184,7 @@ export default function App() {
 
 Remix uses a file-based routing system where files inside the `routes` directory are considered as routes. Remix also support nested routes by treating sub-directories within the `routes` directory as such. Also, we can define dynamic routes by prefixing them with `$`.
 
-Consider the structure below:
+Consider the structure below which is what our routes directory will look like at the end of this section:
 
 ```bash
 ├── items
@@ -202,13 +206,13 @@ Open the `app/routes/index.jsx` file and update as below:
 export default function Index() {
 	return (
 		<div className="divide-y">
-			
+      {/* list of items will be rendered here */}
 		</div>
 	);
 }
 ```
 
-This is where our list of items will be rendered when the data is fetched.
+Within the `div` is where the list of items will be rendered, which we'll cover later.
 
 ### Single item route
 
@@ -221,14 +225,14 @@ Inside `app/routes`, create a `items` directory and inside of it, create a `$id.
 
 export default function ItemId() {
   return (
-    <div className="divide-y">
-      <div className="flex items-center space-x-4 p-4">
-
-      </div>
+    <div className="flex items-center space-x-4 p-4">
+      {/* single item and its comments will be rendered here */}
     </div>
   );
 }
 ```
+
+Within the `div` is where a single item and its comments will be rendered, which we'll cover later.
 
 ## Fetching data from the Hacker News API
 
@@ -347,74 +351,76 @@ Let’s populate the data gotten from the API. The API carries different data bu
 // app/components/item.jsx
     
 ...
-    return (
-        <div className="flex items-center space-x-4 p-4">
-            {loading && <h3>Loading...</h3>}
-            {
-                !loading && item &&
-                <>
-                    <div className="text-orange-500 font-medium self-start place-self-start ">{item.score}</div>
-                    <div>
-                        <h3 className="text-gray-700">
-                            <a href={item.url}>{item.title}</a>
-                            <span className="pl-1 text-sm text-gray-400">(jvns.ca)</span>
-                        </h3>
+return (
+  <div className="flex items-center space-x-4 p-4">
+    {loading && <h3>Loading...</h3>}
 
-                        <div className="flex space-x-1.5 text-xs text-gray-500">
-                            <span>
-                                by <Link className="hover:underline" to="/">{item.by}</Link>
-                            </span>
-                            <span>{item.time}</span>
-                            <Link className="hover:underline" to={`/items/${item.id}`}>{item.descendants} comments</Link>
-                        </div>
-                    </div>
-                </>
-            }
+    {!loading && item && (
+      <>
+        <div className="text-orange-500 font-medium self-start place-self-start">
+          {item.score}
         </div>
-    );
-}
+        <div>
+          <h3 className="text-gray-700">
+            <a href={item.url}>{item.title}</a>
+          </h3>
+
+          <div className="flex space-x-1.5 text-xs text-gray-500">
+            <span>
+              by{' '}
+              <Link className="hover:underline" to="/">
+                {item.by}
+              </Link>
+            </span>
+            <span>{item.time}</span>
+            <Link className="hover:underline" to={`/items/${item.id}`}>
+              {item.descendants} comments
+            </Link>
+          </div>
+        </div>
+      </>
+    )}
+</div>
+);
 ```
 
-Now that we have the Item component, let’s update our `index.jsx` routes to show a list of items.
+Now that we have the `Item` component, let’s update our `index.jsx` route to show a list of items.
 
-First let’s fetch a list of Items from the endpoint using the `getList()` helper function we created earlier, to get a list of items we have to pass in a type of list that should be returned, for this we will be fetching the top stories. let’s import `getList` from `helper/fetch.js` and in the loader function let’s fetch the list and return the response which is a list of top stories in an array of ids.
+Remix uses the concept of data loading for fetching data from an API or a server into components. So we are going to create a loaders to fetch data from the Hacker News API.
+
+First, let’s fetch a list of Items from the endpoint using the `getList()` we created earlier. To get a list of items, we have to pass in the type of list that should be returned. For this, we will be fetching the top stories. Add the code below inside `routes/index.jsx`:
 
 ```jsx
 // app/routes/index.jsx
 
-import { json, useLoaderData } from 'remix'
-import Item from '~/components/Item'
+import { json } from 'remix'
 import { getList } from '~/helper/fetch'
 
 export const loader = async () => {
-  const res = await getList("topstories");
-        
-  return res;
+  const res = await getList('topstories');
+
+  return json(await res.json())
 }
 
 ...
 ```
 
-Let’s use the loaded data to populate the list.
-
-Using `useLoaderData()` function we can get the list fetched earlier by the `loader` function.
-
-We have to do some checking if the number of items returned is greater than zero meaning to check if it’s empty.
-
-Let’s go ahead and map through the list of items, here using the array slice function I’m limiting the list of items to be 30 since the endpoint returns more than that.
+Here, we create a `loader` function that uses the `getList()` to fetch a list of top stories. The `/topstories` endpoint will return an array of item IDs.
 
 ```jsx
 // app/routes/index.jsx
+
 ...
+import { useLoaderData } from 'remix'
+import Item from '~/components/Item'
 
 export default function Index() {
-  const items = useLoaderData()
+  const itemIds = useLoaderData()
 
   return (
     <div className="divide-y">
-
       {
-        items.length>0 && items.slice(0,30).map((itemId)=>{
+        itemIds.length > 0 && itemIds.slice(0, 30).map((itemId) => {
           return(
             <Item item={itemId} key={itemId}/>
           )
@@ -425,11 +431,11 @@ export default function Index() {
 }
 ```
 
-Here, we map through the list of items and render the `Item` component.
+Using `useLoaderData()` we get the list of IDs fetched earlier by `loader()`. Then we perform a simple check to only render the `Item` component when the array of IDs is not empty. Since the `/topstories` endpoint will return up to 500 item IDs, we are using `slice()` to get only the first 30 amd we map through them passing each ID to the `Item` component.
+
+We should now see a list of item displayed on the homepage as below:
 
 ![List of items](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/7de6a473-4f99-4943-97a5-e5dcc0971a4e/Screenshot_2022-03-25_at_09-29-24_Remix_Hacker_News_Clone.png)
-
-List of items
 
 ### Comment component
 

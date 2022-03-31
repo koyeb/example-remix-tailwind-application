@@ -1,21 +1,20 @@
-import { Link, json, useLoaderData } from 'remix'
+import { json, useLoaderData } from 'remix'
 import Item from '~/components/Item'
+import { getList } from '~/helper/fetch'
 
 export const loader = async () => {
-  const res = await fetch(
-    'https://hacker-news.firebaseio.com/v0/topstories.json'
-  )
+  const res = await getList('topstories')
 
   return json(await res.json())
 }
 
 export default function Index() {
-  const items = useLoaderData()
+  const itemIds = useLoaderData()
 
   return (
     <div className="divide-y">
-      {items.length > 0 &&
-        items.slice(0, 10).map((itemId) => {
+      {itemIds.length > 0 &&
+        itemIds.slice(0, 10).map((itemId) => {
           return <Item item={itemId} key={itemId} />
         })}
     </div>
