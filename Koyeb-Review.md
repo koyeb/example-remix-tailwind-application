@@ -83,7 +83,7 @@ module.exports = {
 }
 ```
 
-To compile the CSS, we need of new command. So update the `scripts` section in your `package.json` file to build both the development and production CSS as below:
+We need to add a new command to our application to successfully compile the CSS. Update the `scripts` section in your `package.json` file to build both the development and production CSS with the following command:
 
 ```json
 // package.json
