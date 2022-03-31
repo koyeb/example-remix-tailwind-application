@@ -499,6 +499,7 @@ Koyeb is a developer-friendly serverless platform to deploy apps globally. No-op
 ![https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931227823_koyep1.PNG](https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931227823_koyep1.PNG)
 
 3. If your code is not yet on GitHub, push your code to GitHub and connect your GitHub Account to Koyeb and select GitHub as the Deployment method.
+To deploy on Koyeb, we need to create a new GitHub repository from the GitHub web interface or using the GitHub CLI with the following command:
 
 ![https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931286379_koyep2.PNG](https://paper-attachments.dropbox.com/s_075E46BA182545ABCEC9324A9923BB0DBE250BD9ED7C637841114A94CF2C1058_1647931286379_koyep2.PNG)
 
