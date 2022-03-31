@@ -316,7 +316,7 @@ So far, we have the routes, functions to fetch data from the Hacker News API. No
 
 ### Item component
 
-Will start by create a `components` inside the `app` directory then within the `components` directory, create an `Item.jsx` file that will display each individual item. The `Item` component will accept the item’s ID and make use of the `getItem` function to fetch the item’s detail and stores it in the `item` state to be used to populate the item.
+Will start by create a `components` directory inside the `app` directory then within the `components` directory, create an `Item.jsx` file that will display each individual item. The `Item` component will accept the item’s ID and make use of the `getItem` function to fetch the item’s detail and stores it in the `item` state to be used to populate the item.
 
 The loading state is created in case of data not being available before render, we use the loading state to determine when the data is not yet available and render a loading text or you can use a spinner or a skeleton.
 
