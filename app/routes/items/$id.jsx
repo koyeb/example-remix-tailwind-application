@@ -4,6 +4,7 @@ import { getItem } from '~/helper/fetch'
 
 export const loader = async ({ params }) => {
   const res = await getItem(params.id)
+
   return res
 }
 

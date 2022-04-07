@@ -1,11 +1,11 @@
-import { json, useLoaderData } from 'remix'
+import { useLoaderData } from 'remix'
 import Item from '~/components/Item'
 import { getList } from '~/helper/fetch'
 
 export const loader = async () => {
   const res = await getList('topstories')
 
-  return json(await res.json())
+  return res
 }
 
 export default function Index() {

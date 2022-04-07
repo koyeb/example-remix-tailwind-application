@@ -397,13 +397,12 @@ First, let’s fetch a list of Items from the endpoint using the `getList()` we 
 ```jsx
 // app/routes/index.jsx
 
-import { json } from 'remix'
 import { getList } from '~/helper/fetch'
 
 export const loader = async () => {
   const res = await getList('topstories');
 
-  return json(await res.json())
+  return res
 }
 
 ...
