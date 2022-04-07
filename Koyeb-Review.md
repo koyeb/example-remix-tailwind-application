@@ -69,13 +69,15 @@ npm install -D tailwindcss postcss autoprefixer concurrently
 * `autoprefixer`: for automatically applying vendor prefixes to CSS.
 * `concurrently`: for running multiple commands concurrently.
 
-Next, run the `init` command to create `tailwind.config.js`
+Next, run the `init` command to create `tailwind.config.js`:
 
 ```bash
 npx tailwindcss init -p
 ```
 
-Next, configure our template paths so as Tailwind CSS can know what to purge or not by updating the `content` section of `tailwind.config.js`:
+Using `-p` (short for `--postcss`) flag instruct Tailwind CSS to initialize a `postcss.config.js` file in addition to the `tailwind.config.js` file.
+
+Next, since Tailwind scans our HTML, JavaScript components, and any other template files for class names, then generate all of the corresponding CSS for those styles, we need to configure our template paths so that Tailwind can generate all the CSS we need. We can do that by updating the `content` section of `tailwind.config.js`:
 
 ```jsx
 // tailwind.config.js
@@ -102,7 +104,9 @@ We need to add a new command to our application to successfully compile the CSS.
 
 Now, when we run `npm run dev`, Tailwind CSS will be compiled and saved inside `app/styles/app.css`.
 
-Next, we need to make use of Tailwind directives in our CSS file. Create a `styles` directory in the root of the project and inside it create an `app.css` file and add the snippet below in it:
+Next, we need to make use of Tailwind directives in our CSS file. Directives are custom Tailwind-specific at-rules that offer special functionalities for Tailwind CSS projects.
+
+Create a `styles` directory in the root of the project and inside it create an `app.css` file and add the snippet below in it:
 
 ```css
 /* styles/app.css */
@@ -216,7 +220,7 @@ Within the `div` is where the list of items will be rendered, which we'll cover 
 
 ### Single item route
 
-The single item route will handle the `/items/{id}` URL. This is going to be a dynamic route that handles requests from [localhost:3000/items/1234](http://localhost:3000/items/1234) will be handled by `/items/$id.jsx`.
+The single item route will handle the `/items/{id}` URL. This is going to be a dynamic route such that requests from [localhost:3000/items/1234](http://localhost:3000/items/1234) will be handled by `/items/$id.jsx`.
 
 Inside `app/routes`, create a `items` directory and inside of it, create a `$id.jsx` file and add the code below to it:
 
