@@ -196,7 +196,7 @@ Consider the structure below which is what our routes directory will look like a
 
 ### List of items route
 
-Now that we know how routing works in Remix, let’s define the routes for our application. Our Remix app already come with one of the routes we’ll be needing that is, `routes/index.jsx` which will serve as the homepage of our application and render a list of items.
+Now that we know how routing works in Remix, let’s define the routes for our application. Our Remix app already come with one of the routes we’ll be needing that is, `routes/index.jsx` which will serve as the homepage of our application and render a list of items, in our application's case: Hacker News top stories.
 
 Open the `app/routes/index.jsx` file and update as below:
 
