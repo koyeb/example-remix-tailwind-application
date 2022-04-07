@@ -345,7 +345,7 @@ export default function Item({ item: itemId }) {
 ...
 ```
 
-Let’s populate the data gotten from the API. The API carries different data but we will be using some of them, like the id, title, URL, time, and descendants.
+Next, populate the data received from the API. The API carries different types of data, but we will be using only some of them, specifically the id, title, URL, time, and descendants.
 
 ```jsx
 // app/components/item.jsx
