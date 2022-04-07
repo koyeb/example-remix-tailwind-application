@@ -216,7 +216,7 @@ Within the `div` is where the list of items will be rendered, which we'll cover 
 
 ### Single item route
 
-The single item route will handle the `/items/{id}` URL. This is going to be a dynamic route. That is, a request that comes like this [localhost:3000/items/1234](http://localhost:3000/items/1234) will be handled by `/items/$id.jsx`.
+The single item route will handle the `/items/{id}` URL. This is going to be a dynamic route that handles requests from [localhost:3000/items/1234](http://localhost:3000/items/1234) will be handled by `/items/$id.jsx`.
 
 Inside `app/routes`, create a `items` directory and inside of it, create a `$id.jsx` file and add the code below to it:
 
