@@ -453,7 +453,7 @@ import { Link } from 'remix';
 import { useEffect, useState } from 'react'
 import { getItem } from '~/helper/fetch';
 
-export default function Item({item:itemId}) {
+export default function Comment({item:itemId}) {
   const [item, setItem] = useState();
   const [loading, setLoading] = useState(true);
 
