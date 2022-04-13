@@ -77,7 +77,19 @@ npx tailwindcss init -p
 
 Using `-p` (short for `--postcss`) flag instruct Tailwind CSS to initialize a `postcss.config.js` file in addition to the `tailwind.config.js` file.
 
-Next, since Tailwind scans our HTML, JavaScript components, and any other template files for class names, then generate all of the corresponding CSS for those styles, we need to configure our template paths so that Tailwind can generate all the CSS we need. We can do that by updating the `content` section of `tailwind.config.js`:
+Next, we need to make use of Tailwind directives in our CSS file. Directives are custom Tailwind-specific at-rules that offer special functionalities for Tailwind CSS projects.
+
+Create a `styles` directory in the root of the project and inside it create an `app.css` file and add the snippet below in it:
+
+```css
+/* styles/app.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+Since Tailwind scans our HTML, JavaScript components, and any other template files for class names, then generate all of the corresponding CSS for those styles, we need to configure our template paths so that Tailwind can generate all the CSS we need. We can do that by updating the `content` section of `tailwind.config.js`:
 
 ```jsx
 // tailwind.config.js
@@ -103,18 +115,6 @@ We need to add a new command to our application to successfully compile the CSS.
 ```
 
 Now, when we run `npm run dev`, Tailwind CSS will be compiled and saved inside `app/styles/app.css`.
-
-Next, we need to make use of Tailwind directives in our CSS file. Directives are custom Tailwind-specific at-rules that offer special functionalities for Tailwind CSS projects.
-
-Create a `styles` directory in the root of the project and inside it create an `app.css` file and add the snippet below in it:
-
-```css
-/* styles/app.css */
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
 
 Lastly, we will import and use the compiled `app/styles/app.css` inside `app/root.jsx`:
 
@@ -336,15 +336,15 @@ import { useEffect, useState } from 'react'
 import { getItem } from '~/helper/fetch';
 
 export default function Item({ item: itemId }) {
-    const [item, setItem] = useState();
-    const [loading, setLoading] = useState(true);
+  const [item, setItem] = useState();
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        getItem(itemId).then((result) => {
-            setItem(result);
-            setLoading(false);
-        });
-    }, []);
+  useEffect(() => {
+    getItem(itemId).then((result) => {
+      setItem(result);
+      setLoading(false);
+    });
+  }, []);
 
 ...
 ```
@@ -384,7 +384,7 @@ return (
         </div>
       </>
     )}
-</div>
+  </div>
 );
 ```
 
@@ -447,57 +447,110 @@ Let’s go ahead by creating the `Comment` component, which will be used to disp
 The `Comment` component will accept an item and fetches its comment’s details using the `getItemComments` function and renders the comment details. Also, the `Comment` component checks if each comment has descendants and calls itself and renders till there is/are no nested descendants any more.
 
 ```jsx
-//app/components/comment.jsx
+// app/components/comment.jsx
     
 import { Link } from 'remix';
 import { useEffect, useState } from 'react'
 import { getItem } from '~/helper/fetch';
 
 export default function Item({item:itemId}) {
-    const [item, setItem] = useState();
-    const [loading, setLoading] = useState(true);
+  const [item, setItem] = useState();
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        getItem(itemId).then((result) => {
-            setItem(result);
-            setLoading(false);
-        });
-    }, []);
+  useEffect(() => {
+    getItem(itemId).then((result) => {
+      setItem(result);
+      setLoading(false);
+    });
+  }, []);
 
-    return (
-        <div className="flex items-center space-x-4 p-4">
-            {loading && <h3>Loading...</h3>}
-            {
-                !loading && item &&
-                <>
-                    <div className="text-orange-500 font-medium self-start place-self-start ">{item.score}</div>
-                    <div>
-                        <h3 className="text-gray-700">
-                            {/* <Link to={`${item.url}`}>{item.title}</Link> */}
-                            <a href={item.url}>{item.title}</a>
-                            <span className="pl-1 text-sm text-gray-400">(jvns.ca)</span>
-                        </h3>
-                        
-                        <div className="flex space-x-1.5 text-xs text-gray-500">
-                            <span>
-                                by <Link className="hover:underline" to="/">{item.by}</Link>
-                            </span>
-                            <span>{item.time}</span>
-                            <Link className="hover:underline" to={`/items/${item.id}`}>{item.descendants} comments</Link>
-                        </div>
- 
-                    </div>
-                </>
-
-            }
-        </div >
-    );
+  return (
+    <div className="flex items-center space-x-4 p-4">
+        {loading && <h3>Loading...</h3>}
+        {
+          !loading && item &&
+          <>
+            <div className="text-orange-500 font-medium self-start place-self-start ">{item.score}</div>
+            <div>
+                <h3 className="text-gray-700">
+                  <a href={item.url}>{item.title}</a>
+                  <span className="pl-1 text-sm text-gray-400">(jvns.ca)</span>
+                </h3>
+                
+                <div className="flex space-x-1.5 text-xs text-gray-500">
+                  <span>
+                    by <Link className="hover:underline" to="/">{item.by}</Link>
+                  </span>
+                  <span>{item.time}</span>
+                  <Link className="hover:underline" to={`/items/${item.id}`}>{item.descendants} comments</Link>
+                </div>
+            </div>
+          </>
+        }
+    </div>
+  );
 }
 ```
 
-![Single item and comments](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b6efc7d4-2e2b-4f42-9637-9e7bd89627f4/Screenshot_2022-03-25_at_09-38-27_Remix_Hacker_News_Clone.png)
+Let's update `$id.jsx` to display a single item and its comments using the `Comment` component:
 
-Single item and comments
+```jsx
+// app/routes/items/$id.jsx
+
+import { Link, useLoaderData } from 'remix'
+import Comment from '~/components/Comment'
+import { getItem } from '~/helper/fetch'
+
+export const loader = async ({ params }) => {
+  const res = await getItem(params.id)
+
+  return res
+}
+
+export default function ItemId() {
+  const item = useLoaderData()
+
+  return (
+    <div className="flex items-center space-x-4 p-4">
+      {item && (
+        <>
+          <div className="text-orange-500 font-medium self-start place-self-start ">
+            {item.score}
+          </div>
+          <div>
+            <h3 className="text-gray-700">
+              <a href={item.url}>{item.title}</a>
+            </h3>
+            <div className="flex space-x-1.5 text-xs text-gray-500">
+              <span>
+                by{' '}
+                <Link className="hover:underline" to="/">
+                  {item.by}
+                </Link>
+              </span>
+              <span>{item.time}</span>
+              <Link
+                className="hover:underline"
+                to={{ pathname: '/items', query: { id: item.id } }}
+              >
+                {item.descendants} comments
+              </Link>
+            </div>
+            {item.kids &&
+              item.kids.map((comment) => (
+                <Comment item={comment} key={comment} />
+              ))}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+```
+
+First, we create a loader function that uses the `getItem()` to fetch a particular item. The function takes the ID of the item to fetch, which is gotten from  the URL parameter. Using `useLoaderData()` we get the item fetched by the `loader()`, then render the item's details. For the item's comments, we make use of the `Comment` component passing to it the item.
+
+![Single item and comments](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b6efc7d4-2e2b-4f42-9637-9e7bd89627f4/Screenshot_2022-03-25_at_09-38-27_Remix_Hacker_News_Clone.png)
 
 ## Deploy to Koyeb
 
