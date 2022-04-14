@@ -1,4 +1,4 @@
-import { useLoaderData } from 'remix'
+import { useLoaderData } from '@remix-run/react'
 import Item from '~/components/Item'
 import { getList } from '~/helper/fetch'
 

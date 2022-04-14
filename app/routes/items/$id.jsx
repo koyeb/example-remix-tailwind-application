@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from 'remix'
+import { Link, useLoaderData } from '@remix-run/react'
 import Comment from '~/components/Comment'
 import { getItem } from '~/helper/fetch'
 

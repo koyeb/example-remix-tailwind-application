@@ -145,7 +145,7 @@ import {
   Scripts,
   ScrollRestoration,
   Link
-} from "remix";
+} from '@remix-run/react';
 import styles from "~/styles/app.css"
 
 export default function App() {
@@ -331,7 +331,7 @@ The loading state is created in case of data not being available before it rende
 ```jsx
 // app/components/item.jsx
     
-import { Link } from 'remix';
+import { Link } from '@remix-run/react';
 import { useEffect, useState } from 'react'
 import { getItem } from '~/helper/fetch';
 
@@ -345,8 +345,7 @@ export default function Item({ item: itemId }) {
       setLoading(false);
     });
   }, []);
-
-...
+}
 ```
 
 Next, populate the data received from the API. The API carries different types of data, but we will be using only some of them, specifically the id, title, URL, time, and descendants.
@@ -355,6 +354,7 @@ Next, populate the data received from the API. The API carries different types o
 // app/components/item.jsx
     
 ...
+
 return (
   <div className="flex items-center space-x-4 p-4">
     {loading && <h3>Loading...</h3>}
@@ -413,8 +413,7 @@ Here, we create a `loader` function that uses the `getList()` to fetch a list of
 ```jsx
 // app/routes/index.jsx
 
-...
-import { useLoaderData } from 'remix'
+import { useLoaderData } from '@remix-run/react'
 import Item from '~/components/Item'
 
 export default function Index() {
@@ -449,46 +448,55 @@ The `Comment` component will accept an item and fetches its comment’s details 
 ```jsx
 // app/components/comment.jsx
     
-import { Link } from 'remix';
+import { Link } from '@remix-run/react'
 import { useEffect, useState } from 'react'
-import { getItem } from '~/helper/fetch';
+import { getItemComments } from '~/helper/fetch'
 
-export default function Comment({item:itemId}) {
-  const [item, setItem] = useState();
-  const [loading, setLoading] = useState(true);
+export default function Comment({ item }) {
+  const [comment, setComment] = useState()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getItem(itemId).then((result) => {
-      setItem(result);
-      setLoading(false);
-    });
-  }, []);
+    getItemComments(item).then((result) => {
+      setComment(result)
+      setLoading(false)
+    })
+  }, [])
 
   return (
     <div className="flex items-center space-x-4 p-4">
-        {loading && <h3>Loading...</h3>}
-        {
-          !loading && item &&
-          <>
-            <div className="text-orange-500 font-medium self-start place-self-start ">{item.score}</div>
-            <div>
-                <h3 className="text-gray-700">
-                  <a href={item.url}>{item.title}</a>
-                  <span className="pl-1 text-sm text-gray-400">(jvns.ca)</span>
-                </h3>
-                
-                <div className="flex space-x-1.5 text-xs text-gray-500">
-                  <span>
-                    by <Link className="hover:underline" to="/">{item.by}</Link>
-                  </span>
-                  <span>{item.time}</span>
-                  <Link className="hover:underline" to={`/items/${item.id}`}>{item.descendants} comments</Link>
-                </div>
+      {loading && <h3>Loading...</h3>}
+      {!loading && comment && (
+        <>
+          <div className="text-orange-500 font-medium self-start place-self-start ">
+            {comment.score}
+          </div>
+          <div>
+            {comment.text && !comment.deleted && (
+              <div
+                className="overflow-hidden text-sm text-gray-500"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{
+                  __html: comment.text,
+                }}
+              />
+            )}
+            {comment.kids &&
+              comment.kids.map((kid) => <Comment item={kid} key={kid} />)}
+            <div className="flex space-x-1.5 text-xs text-gray-500">
+              <span>
+                by{' '}
+                <Link className="hover:underline" to="/">
+                  {comment.by}
+                </Link>
+              </span>
+              <span>{comment.time}</span>
             </div>
-          </>
-        }
+          </div>
+        </>
+      )}
     </div>
-  );
+  )
 }
 ```
 
@@ -497,7 +505,7 @@ Let's update `$id.jsx` to display a single item and its comments using the `Comm
 ```jsx
 // app/routes/items/$id.jsx
 
-import { Link, useLoaderData } from 'remix'
+import { Link, useLoaderData } from '@remix-run/react'
 import Comment from '~/components/Comment'
 import { getItem } from '~/helper/fetch'
 

@@ -1,4 +1,4 @@
-import { Link } from 'remix'
+import { Link } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { getItem } from '~/helper/fetch'
 

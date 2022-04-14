@@ -5,16 +5,16 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  Link
-} from "remix";
-import styles from "~/styles/app.css"
+  Link,
+} from '@remix-run/react'
+import styles from '~/styles/app.css'
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }]
+  return [{ rel: 'stylesheet', href: styles }]
 }
 
 export function meta() {
-  return { title: "Remix Hacker News Clone" };
+  return { title: 'Remix Hacker News Clone' }
 }
 
 export default function App() {
@@ -42,8 +42,8 @@ export default function App() {
         </div>
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
-  );
+  )
 }

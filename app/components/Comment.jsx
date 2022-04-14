@@ -1,4 +1,4 @@
-import { Link } from 'remix'
+import { Link } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import { getItemComments } from '~/helper/fetch'
 
@@ -18,11 +18,10 @@ export default function Comment({ item }) {
       {loading && <h3>Loading...</h3>}
       {!loading && comment && (
         <>
-          <div className="text-orange-500 font-medium self-start place-self-start ">
+          <div className="text-orange-500 font-medium self-start place-self-start">
             {comment.score}
           </div>
           <div>
-            <h3 className="text-gray-700"></h3>
             {comment.text && !comment.deleted && (
               <div
                 className="overflow-hidden text-sm text-gray-500"
