@@ -251,71 +251,53 @@ For now, we will create some variables that we will reuse later:
 ```jsx
 // app/helper/fetch.js
 
-const endpointPrefix = 'https://hacker-news.firebaseio.com/v0/';
+const baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 const endpointSuffix = '.json';
 ```
 
-- `endpointPrefix`: This is the beginning of the API endpoint, it is the main API URL.
+- `baseUrl`: This is the base API URL.
 - `endpointSuffix`: This is the ending of the API endpoint and it’s the file type to be fetched.
 
-### List of items
+### Top stories
 
-In the `fetch.js` file, create a `getList` function that will fetch the list of items from hacker news:
+In the `fetch.js` file, create a `getTopStories` function that will fetch the IDs for top stories (items) from hacker news:
 
 ```jsx
 // app/helper/fetch.js
     
-export const getList = async (list) => {
-  if (list) {
-    const endpoint = `${endpointPrefix}${list}${endpointSuffix}`;
-    const res = await fetch(endpoint);
-    const json = await res.json();
+export const getTopStories = async () => {
+  const response = await fetch(`${baseUrl}topstories${endpointSuffix}`)
 
-    return json;
-  }
-
-  return null;
-};
+  return response.json()
+}
 ```
 
 ### Single item
 
-For the single item, let’s create a `getItem` function that will fetch an individual item:
+For a single item, let’s create a `getItem` function that will fetch an individual item. Within Hacker News, items' comments are basically nested items. Therefore, this function will also be used to fetch an item's comments:
 
 ```jsx
 // app/helper/fetch.js
 
-export const getItem = async (item) => {
-  if (item) {
-    const endpoint = `${endpointPrefix}item/${item}${endpointSuffix}`;
-    const res = await fetch(endpoint);
-    const json = await res.json();
+export const getItem = async (itemId) => {
+  const response = await fetch(`${baseUrl}item/${itemId}${endpointSuffix}`)
 
-    return json;
-  }
-
-  return null;
-};
+  return response.json()
+}
 ```
 
-### Item comments
+### User
 
-For the item comments, let’s create `getItemComments` function, this function will fetch the comments for our individual items.
+Lastly, we'll create a `getUser` function that will be used to fetch the details of the user that created an item or commented on an item:
 
 ```jsx
 // app/helper/fetch.js
     
-export const getItemComments = async (item) => {
-  if (item) {
-    const endpoint = `${endpointPrefix}item/${item}${endpointSuffix}`;
-    const res = await fetch(endpoint);
-    const json = await res.json();
+export const getUser = async (userId) => {
+  const response = await fetch(`${baseUrl}user/${userId}${endpointSuffix}`)
 
-    return json;
-  }
-
-  return null;
-};
+  return response.json()
+}
 ```
 
 ## Build the components of our application
@@ -324,91 +306,73 @@ So far, we have the routes, functions to fetch data from the Hacker News API. No
 
 ### Item component
 
-Will start by create a `components` directory inside the `app` directory then within the `components` directory, create an `Item.jsx` file that will display each individual item. The `Item` component will accept the item’s ID and make use of the `getItem` function to fetch the item’s detail and stores it in the `item` state to be used to populate the item.
-
-The loading state is created in case of data not being available before it renders. We use the loading state to determine if the data is not yet available and, in that case, render a loading text, or if you would prefer a spinner or a skeleton.
+We'll start by creating a `components` directory inside the `app` directory then within the `components` directory, create an `Item.jsx` file that will display each individual item. The `Item` component will accept the item to display. Add the following code to it:
 
 ```jsx
 // app/components/item.jsx
     
-import { Link } from '@remix-run/react';
-import { useEffect, useState } from 'react'
-import { getItem } from '~/helper/fetch';
+import { Link } from '@remix-run/react'
 
-export default function Item({ item: itemId }) {
-  const [item, setItem] = useState();
-  const [loading, setLoading] = useState(true);
+export default function Item({ item }) {
+  return (
+    <div className="flex items-center space-x-4 p-4">
+      {item && (
+        <>
+          <div className="text-orange-500 font-medium self-start place-self-start ">
+            {item.score}
+          </div>
+          <div>
+            <h3 className="text-gray-700">
+              <a href={item.url}>{item.title}</a>
+            </h3>
 
-  useEffect(() => {
-    getItem(itemId).then((result) => {
-      setItem(result);
-      setLoading(false);
-    });
-  }, []);
+            <div className="flex space-x-1.5 text-xs text-gray-500">
+              <span>
+                by{' '}
+                <Link className="hover:underline" to="/">
+                  {item.by}
+                </Link>
+              </span>
+              <span>{item.time}</span>
+              <Link className="hover:underline" to={`/items/${item.id}`}>
+                {item.descendants} comments
+              </Link>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
 }
 ```
 
-Next, populate the data received from the API. The API carries different types of data, but we will be using only some of them, specifically the id, title, URL, time, and descendants.
-
-```jsx
-// app/components/item.jsx
-    
-...
-
-return (
-  <div className="flex items-center space-x-4 p-4">
-    {loading && <h3>Loading...</h3>}
-
-    {!loading && item && (
-      <>
-        <div className="text-orange-500 font-medium self-start place-self-start">
-          {item.score}
-        </div>
-        <div>
-          <h3 className="text-gray-700">
-            <a href={item.url}>{item.title}</a>
-          </h3>
-
-          <div className="flex space-x-1.5 text-xs text-gray-500">
-            <span>
-              by{' '}
-              <Link className="hover:underline" to="/">
-                {item.by}
-              </Link>
-            </span>
-            <span>{item.time}</span>
-            <Link className="hover:underline" to={`/items/${item.id}`}>
-              {item.descendants} comments
-            </Link>
-          </div>
-        </div>
-      </>
-    )}
-  </div>
-);
-```
+Here, we are basically display the item's details, specifically the id, title, URL, time, and descendants.
 
 Now that we have the `Item` component, let’s update our `index.jsx` route to show a list of items.
 
 Remix uses the concept of data loading for fetching data from an API or a server into components. So we are going to create a loaders to fetch data from the Hacker News API.
 
-First, let’s fetch a list of Items from the endpoint using the `getList()` we created earlier. To get a list of items, we have to pass in the type of list that should be returned. For this, we will be fetching the top stories. Add the code below inside `routes/index.jsx`:
+First, let’s fetch the top stories from the endpoint using the `getTopStories()` we created earlier. Add the code below inside `routes/index.jsx`:
 
 ```jsx
 // app/routes/index.jsx
 
-import { getList } from '~/helper/fetch'
+import { getTopStories, getItem } from '~/helper/fetch'
 
 export const loader = async () => {
-  const res = await getList('topstories');
+  const topStoryIds = await getTopStories()
 
-  return res
+  const items = await Promise.all(
+    topStoryIds.slice(0, 10).map(async (itemId) => await getItem(itemId))
+  )
+
+  return items
 }
-
-...
 ```
 
-Here, we create a `loader` function that uses the `getList()` to fetch a list of top stories. The `/topstories` endpoint will return an array of item IDs.
+Here, we create a `loader` function that uses the `getTopStories` function to fetch the top stories. The `/topstories` endpoint will return an array of item IDs. Since the `/topstories` endpoint will return up to 500 item IDs, we are using `slice()` to get only the first 30 amd we map through them passing each ID to the `getItem` function to fetch the item's details.
+
+Next, let's add the portion to render the items:
 
 ```jsx
 // app/routes/index.jsx
@@ -417,23 +381,20 @@ import { useLoaderData } from '@remix-run/react'
 import Item from '~/components/Item'
 
 export default function Index() {
-  const itemIds = useLoaderData()
+  const items = useLoaderData()
 
   return (
     <div className="divide-y">
-      {
-        itemIds.length > 0 && itemIds.slice(0, 30).map((itemId) => {
-          return(
-            <Item item={itemId} key={itemId}/>
-          )
-        })
-      }
+      {items.length > 0 &&
+        items.map((item) => {
+          return <Item item={item} key={item.id} />
+        })}
     </div>
-  );
+  )
 }
 ```
 
-Using `useLoaderData()` we get the list of IDs fetched earlier by `loader()`. Then we perform a simple check to only render the `Item` component when the array of IDs is not empty. Since the `/topstories` endpoint will return up to 500 item IDs, we are using `slice()` to get only the first 30 amd we map through them passing each ID to the `Item` component.
+Using `useLoaderData()` we get the items fetched earlier by `loader()`. Then we perform a simple check to only render the `Item` component when the array of items is not empty. Then we loop through each item passing it to the `Item` component.
 
 We should now see a list of item displayed on the homepage as below:
 
@@ -441,34 +402,19 @@ We should now see a list of item displayed on the homepage as below:
 
 ### Comment component
 
-Let’s go ahead by creating the `Comment` component, which will be used to display an item’s comments. Create a new file `Comment.jsx` in the `components/` directory.
-
-The `Comment` component will accept an item and fetches its comment’s details using the `getItemComments` function and renders the comment details. Also, the `Comment` component checks if each comment has descendants and calls itself and renders till there is/are no nested descendants any more.
+Let’s go ahead by creating the `Comment` component, which will be used to display an item’s comments. Create a new file `Comment.jsx` in the `components/` directory. The `Comment` component will accept a comment (item) and renders the comment details. Also, the `Comment` component checks if each comment has descendants and calls itself and renders till there is/are no nested descendants any more.
 
 ```jsx
 // app/components/comment.jsx
     
 import { Link } from '@remix-run/react'
-import { useEffect, useState } from 'react'
-import { getItemComments } from '~/helper/fetch'
 
-export default function Comment({ item }) {
-  const [comment, setComment] = useState()
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getItemComments(item).then((result) => {
-      setComment(result)
-      setLoading(false)
-    })
-  }, [])
-
+export default function Comment({ comment }) {
   return (
     <div className="flex items-center space-x-4 p-4">
-      {loading && <h3>Loading...</h3>}
-      {!loading && comment && (
+      {comment && (
         <>
-          <div className="text-orange-500 font-medium self-start place-self-start ">
+          <div className="text-orange-500 font-medium self-start place-self-start">
             {comment.score}
           </div>
           <div>
@@ -510,13 +456,17 @@ import Comment from '~/components/Comment'
 import { getItem } from '~/helper/fetch'
 
 export const loader = async ({ params }) => {
-  const res = await getItem(params.id)
+  const item = await getItem(params.id)
 
-  return res
+  const comments = await Promise.all(
+    item.kids.map(async (itemId) => await getItem(itemId))
+  )
+
+  return { item, comments }
 }
 
 export default function ItemId() {
-  const item = useLoaderData()
+  const { item, comments } = useLoaderData()
 
   return (
     <div className="flex items-center space-x-4 p-4">
@@ -544,9 +494,9 @@ export default function ItemId() {
                 {item.descendants} comments
               </Link>
             </div>
-            {item.kids &&
-              item.kids.map((comment) => (
-                <Comment item={comment} key={comment} />
+            {comments &&
+              comments.map((comment) => (
+                <Comment comment={comment} key={comment.id} />
               ))}
           </div>
         </>
@@ -556,7 +506,7 @@ export default function ItemId() {
 }
 ```
 
-First, we create a loader function that uses the `getItem()` to fetch a particular item. The function takes the ID of the item to fetch, which is gotten from  the URL parameter. Using `useLoaderData()` we get the item fetched by the `loader()`, then render the item's details. For the item's comments, we make use of the `Comment` component passing to it the item.
+First, we create a loader function that uses the `getItem()` to fetch a particular item. The function takes the ID of the item to fetch, which is gotten from the URL parameter. Also, we fetch the item's comments by looping throuh the item's descendants. Using `useLoaderData()` we get both the item and comments fetched by the `loader()`, then render the item's details as well as its comments. For the item's comments, we make use of the `Comment` component passing to it each comment.
 
 ![Single item and comments](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b6efc7d4-2e2b-4f42-9637-9e7bd89627f4/Screenshot_2022-03-25_at_09-38-27_Remix_Hacker_News_Clone.png)
 
