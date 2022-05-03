@@ -1,21 +1,25 @@
 import { useLoaderData } from '@remix-run/react'
 import Item from '~/components/Item'
-import { getList } from '~/helper/fetch'
+import { getTopStories, getItem } from '~/helper/fetch'
 
 export const loader = async () => {
-  const res = await getList('topstories')
+  const topStoryIds = await getTopStories()
 
-  return res
+  const items = await Promise.all(
+    topStoryIds.slice(0, 10).map(async (itemId) => await getItem(itemId))
+  )
+
+  return items
 }
 
 export default function Index() {
-  const itemIds = useLoaderData()
+  const items = useLoaderData()
 
   return (
     <div className="divide-y">
-      {itemIds.length > 0 &&
-        itemIds.slice(0, 10).map((itemId) => {
-          return <Item item={itemId} key={itemId} />
+      {items.length > 0 &&
+        items.map((item) => {
+          return <Item item={item} key={item.id} />
         })}
     </div>
   )

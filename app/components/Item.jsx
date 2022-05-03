@@ -1,22 +1,9 @@
 import { Link } from '@remix-run/react'
-import { useEffect, useState } from 'react'
-import { getItem } from '~/helper/fetch'
 
-export default function Item({ item: itemId }) {
-  const [item, setItem] = useState()
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    getItem(itemId).then((result) => {
-      setItem(result)
-      setLoading(false)
-    })
-  }, [])
-
+export default function Item({ item }) {
   return (
     <div className="flex items-center space-x-4 p-4">
-      {loading && <h3>Loading...</h3>}
-      {!loading && item && (
+      {item && (
         <>
           <div className="text-orange-500 font-medium self-start place-self-start ">
             {item.score}

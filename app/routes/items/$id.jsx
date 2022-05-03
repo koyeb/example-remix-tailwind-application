@@ -3,13 +3,17 @@ import Comment from '~/components/Comment'
 import { getItem } from '~/helper/fetch'
 
 export const loader = async ({ params }) => {
-  const res = await getItem(params.id)
+  const item = await getItem(params.id)
 
-  return res
+  const comments = await Promise.all(
+    item.kids.map(async (itemId) => await getItem(itemId))
+  )
+
+  return { item, comments }
 }
 
 export default function ItemId() {
-  const item = useLoaderData()
+  const { item, comments } = useLoaderData()
 
   return (
     <div className="flex items-center space-x-4 p-4">
@@ -37,9 +41,9 @@ export default function ItemId() {
                 {item.descendants} comments
               </Link>
             </div>
-            {item.kids &&
-              item.kids.map((comment) => (
-                <Comment item={comment} key={comment} />
+            {comments &&
+              comments.map((comment) => (
+                <Comment comment={comment} key={comment.id} />
               ))}
           </div>
         </>
